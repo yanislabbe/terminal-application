@@ -1,4 +1,4 @@
-# terminal-application# Terminal Application
+# Terminal Application
 
 This project is a simple terminal application that allows you to execute commands and display the results in a user interface.
 
@@ -73,6 +73,6 @@ Please make sure to test your changes and provide appropriate documentation.
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/your-username/terminal-application/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/yanislabbe/terminal-application/blob/main/LICENSE).
 
 ---
