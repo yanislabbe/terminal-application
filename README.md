@@ -6,7 +6,7 @@ This project is a simple terminal application that allows you to execute command
 
 Before you can use this application, make sure you have the following installed on your system:
 
-- Node.js (version X.X.X or higher)
+- Node.js
 - NPM (usually included with Node.js)
 
 ## Installation
