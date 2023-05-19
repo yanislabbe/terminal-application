@@ -31,8 +31,6 @@ Follow these steps to install and run the application:
    npm install
    ```
 
-4. Place your external C programs, in the `program/` directory at the root of the project.
-
 ## Usage
 
 To use the terminal application, follow these steps:
