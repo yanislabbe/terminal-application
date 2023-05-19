@@ -9,12 +9,14 @@ function writeToTerminal(text) {
                 .replace(/\[1;34m/g, '<span style="color: blue;">')
                 .replace(/\[1;32m/g, '<span style="color: green;">')
                 .replace(/\[0m/g, '</span>');
-            return `<p>${formattedLine}</p>`;
+            return formattedLine;
         })
-        .join('');
-    terminal.innerHTML += formattedText;
+        .join('\n');
+    terminal.innerHTML += `<pre>${formattedText}</pre>`;
     terminal.scrollTop = terminal.scrollHeight;
 }
+
+
 
 function executeCommand(command) {
     const xhr = new XMLHttpRequest();
@@ -30,9 +32,12 @@ function executeCommand(command) {
         }
     };
 
+    const folderSelect = document.getElementById('folderSelect');
+    const selectedFolder = folderSelect.value;
+
     xhr.open('POST', '/execute', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({ command: command }));
+    xhr.send(JSON.stringify({ command: command, folder: selectedFolder }));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -74,6 +79,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
     input.focus();
 });
-
-
-

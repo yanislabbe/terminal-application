@@ -1,57 +1,81 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const path = require('path');
+const { promisify } = require('util');
 
 const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-app.post('/execute', (req, res) => {
-  try {
-    const command = req.body.command.trim();
-    const isValidCommand = validateCommand(command);
+const port = 5000;
 
-    if (!isValidCommand) {
+app.post('/execute', async (req, res) => {
+  const command = req.body.command.trim();
+  const folder = req.body.folder.trim();
+  const isValidCommand = validateCommand(command);
+
+  if (!isValidCommand) {
       return res.status(400).send('Invalid command');
+  }
+
+  const childProcess = spawn(command, { shell: true, cwd: path.join(__dirname, folder) });
+
+  const [stdout, stderr] = await Promise.all([
+    captureProcessOutput(childProcess.stdout),
+    captureProcessOutput(childProcess.stderr),
+  ]);
+
+  try {
+    await waitForProcessExit(childProcess);
+    res.send(stdout);
+  } catch (error) {
+    console.error(`Error output: ${stderr}`);
+
+    let errorMessage = error.message;
+    if (error.code === 127) {
+      errorMessage = `Command not found: ${command}`;
     }
 
-    const childProcess = spawn(command, { shell: true, cwd: path.join(__dirname, 'program') });
-
-    let output = '';
-    let errorOutput = '';
-
-    childProcess.stdout.on('data', (data) => {
-      output += data.toString();
-    });
-
-    childProcess.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-    });
-
-    childProcess.on('close', (code) => {
-      if (code === 0) {
-        res.send(output);
-      } else {
-        res.status(500).send('Internal Server Error');
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send(`${errorMessage}`);
   }
 });
 
 function validateCommand(command) {
-  const trimmedCommand = command.trim();
-
-  if (trimmedCommand.startsWith('make') || trimmedCommand.startsWith('./')) {
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
-const port = 5000;
+function captureProcessOutput(stream) {
+  return new Promise((resolve, reject) => {
+    let output = '';
+    stream.on('data', (data) => {
+      output += data.toString();
+    });
+    stream.on('end', () => {
+      resolve(output);
+    });
+    stream.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
+
+function waitForProcessExit(childProcess) {
+  return new Promise((resolve, reject) => {
+    childProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        const error = new Error('Child process exited with non-zero code');
+        error.code = code;
+        reject(error);
+      }
+    });
+    childProcess.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });

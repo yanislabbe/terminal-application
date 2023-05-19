@@ -65,3 +65,32 @@ footer a {
     color: #00ff00;
 }
 
+.folderSelect {
+    text-align: center;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.folderSelect label {
+    color: #dcdcdc;
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+.folderSelect select {
+    padding: 5px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #000;
+    color: #00ff00;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+.folderSelect select:focus {
+    outline: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
